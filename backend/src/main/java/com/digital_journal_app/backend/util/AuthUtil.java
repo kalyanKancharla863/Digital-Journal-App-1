@@ -1,0 +1,43 @@
+package com.digital_journal_app.backend.util;
+
+import com.digital_journal_app.backend.exceptions.APIException;
+import com.digital_journal_app.backend.model.User;
+import com.digital_journal_app.backend.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AuthUtil {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public String getLoggedInEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = userRepository.findByUserName(authentication.getName()).orElseThrow(
+                () -> new APIException("No user Found with username: " + authentication.getName())
+        );
+        return user.getEmail();
+    }
+
+    public Long getLoggedInUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = userRepository.findByUserName(authentication.getName()).orElseThrow(
+                () -> new APIException("No user Found with username: " + authentication.getName())
+        );
+        return user.getId();
+    }
+
+
+    public User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return userRepository.findByUserName(authentication.getName()).orElseThrow(
+                () -> new APIException("No user Found with username: " + authentication.getName())
+        );
+    }
+}
